@@ -31,7 +31,7 @@ The reduce keyword corresponds to supporting the reduce value of the
 [prefers-reduced-motion](https://drafts.csswg.org/mediaqueries-5/#prefers-reduced-motion) CSS media query.
 Such a supporting site may provide alternate effects, e.g.
 
-```html
+```css
 @keyframes pulse {
   from { transform: none; }
   to { transform: scale(15%); }
