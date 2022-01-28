@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../src/polyfill.js"></script>
+    <style>
+      .target {
+        width: 100px;
+        height: 100px;
+        background: green;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>A simple test</h1>
+    <select class="reduce-motion"></select>
+    <button>Click to animate</button>
+    <div class="target"></div>
+  </body>
+  <script>
+    let target = document.querySelector('.target');
+    let anim = target.animate([
+        {transform: ['none'], backgroundColor: 'red'},
+        {transform: 'translate(300px, 0) rotate(360deg)', backgroundColor: 'green'},
+        {transform: 'translate(300px, 300px) rotate(720deg)', backgroundColor: 'yellow'},
+        {transform: 'translate(0, 300px) rotate(1080deg)', backgroundColor: 'blue'},
+        {transform: 'translate(0, 0) rotate(1440deg)', backgroundColor: 'red'},
+      ], {duration: 5000, fill: 'forwards'});
+    document.querySelector('button').addEventListener('click', () => {
+      anim.cancel();
+      anim.play();
+    });
+  </script>
+</html>
