@@ -20,7 +20,7 @@ function init() {
     {backgroundImage: 'url(images/camera.jpg)', offset: 0.66 - TRANSITION},
     {backgroundImage: 'url(images/play.png)', offset: 0.66 + TRANSITION},
     {backgroundImage: 'url(images/play.png)'},
-  ], 10000);
+  ], {duration: 10000, fill: 'both'});
   scrollLinkAnimation(scroller, backgroundAnim, totalProgress);
   for (let i = 0; i < anims.length; i++) {
     let progress = function() {
