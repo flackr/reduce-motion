@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../../src/scroll-animations.js"></script>
+    <script src="../../src/polyfill.js"></script>
+    <style>
+      .header {
+        background-image: url('https://flackr.github.io/scroll-timeline/demo/parallax/images/winter.jpg');
+        background-size: cover;
+        height: 50vh;
+        color: white;
+        font-size: 15vh;
+        padding: 0 5vh;
+        line-height: 60vh;
+      }
+      html, body {
+        margin: 0;
+      }
+      body {
+        height: 200vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">Winter</div>
+    <select class="reduce-motion"></select>
+  </body>
+  <script>
+    let header = document.querySelector('.header');
+    scrollLinkAnimation(document.scrollingElement, header.animate([
+        {backgroundPosition: '50% 50%'},
+        {backgroundPosition: '50% 0%'},
+      ], {duration: 10000}), () => {
+        return document.scrollingElement.scrollTop / header.clientHeight;
+      });
+  </script>
+</html>

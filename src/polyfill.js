@@ -13,7 +13,7 @@ let longhands = function(property) {
 }
 
 const NON_PROPERTIES = ['offset'];
-const MOTION_PROPERTIES = ['transform', 'left', 'top', 'right', 'bottom', 'filter', 'width', 'height'].concat(
+const MOTION_PROPERTIES = ['transform', 'left', 'top', 'right', 'bottom', 'filter', 'width', 'height', 'background-position'].concat(
     longhands('margin')).concat(longhands('padding')).concat(longhands('border'));
 
 // A description of each mode.
@@ -82,6 +82,8 @@ Element.prototype.animate = function(keyframes, options) {
     clones.set(node, clone);
     clone.style.display = 'none';
     clone.style.position = 'absolute';
+    clone.style.width = `${this.clientWidth}px`;
+    clone.style.height = `${this.clientHeight}px`;
     this.parentNode.insertBefore(clone, this);
   }
 
@@ -125,7 +127,7 @@ Element.prototype.animate = function(keyframes, options) {
       clone.style.display = getComputedStyle(node).display;
     } else {
       clone.style.display = 'none';
-      node.style.opacity = '';
+      node.style.filter = '';
     }
     switch (animationMode[0]) {
       case MOTION_NONE: {
@@ -166,8 +168,8 @@ Element.prototype.animate = function(keyframes, options) {
         let t2 = (t + (1 - CROSSFADE_PROGRESS) * (p2 - p1));
         realMotionAnimation.currentTime =  t * duration;
         cloneMotionAnimation.currentTime = t2 * duration;
-        node.style.opacity = 1 - p;
-        clone.style.opacity = p;
+        node.style.filter = `opacity(${(1 - p) * 100}%)`;
+        clone.style.filter = `opacity(${p * 100}%)`;
         break;
       }
       case MOTION_FULL: {
