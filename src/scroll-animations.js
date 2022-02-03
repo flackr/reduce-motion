@@ -1,8 +1,17 @@
+function onScrollChange(scroller, fn) {
+  if (scroller == document.scrollingElement) {
+    window.addEventListener('scroll', fn);
+  } else {
+    scroller.addEventListener('scroll', fn);
+  }
+  window.addEventListener('resize', fn);
+}
+
 /**
  * Create a scroll-linked animation
  * @param {Element} scroller
- * @param {Element} element
  * @param {Object} animation
+ * @param {Function} progress A function which returns current progress.
  */
 function scrollLinkAnimation(scroller, animation, progress) {
   animation.pause();
@@ -11,20 +20,32 @@ function scrollLinkAnimation(scroller, animation, progress) {
     animation.currentTime = progress() * duration;
   }
   update();
-  if (scroller == document.scrollingElement) {
-    window.addEventListener('scroll', update);
-  } else {
-    scroller.addEventListener('scroll', update);
-  }
+  onScrollChange(scroller, update);
 }
 
 /**
  * Create a scroll-triggered animation
- * @param {source: Element, offsets: Object?, view: Element?, fit: Boolean} scrollOptions
- * @param {Element} element
- * @param {Object} keyframes
- * @param {Object} options
+ * @param {Element} scroller
+ * @param {Object} animation
+ * @param {Function} condition Returns true if activation point has been reached.
  */
-function scrollTriggeredAnimation(scrollOptions, element, keyframes, options) {
-
+function scrollTriggerAnimation(scroller, animation, condition) {
+  let current = condition();
+  let duration = animation.effect.getComputedTiming().duration;
+  animation.persist();
+  animation.pause();
+  if (current) {
+    animation.currentTime = duration;
+  } else {
+    animation.currentTime = -1;
+  }
+  function update() {
+    let value = condition();
+    if (value == current)
+      return;
+    current = value;
+    animation.playbackRate = current ? 1 : -1;
+    animation.play();
+  }
+  onScrollChange(scroller, update);
 }

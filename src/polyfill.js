@@ -61,7 +61,7 @@ let getKeyframeOffsets = function(keyframes) {
       } else {
         let nextIndex = nextOffsetIndex[i];
         let nextOffset = keyframes[nextIndex].offset || 1;
-        offset = (i - lastOffsetIndex) / (nextIndex - lastOffsetIndex) * (nextOffset - lastOffset);
+        offset = lastOffset + (i - lastOffsetIndex) / (nextIndex - lastOffsetIndex) * (nextOffset - lastOffset);
       }
     } else {
       lastOffset = offset;
@@ -81,9 +81,10 @@ Element.prototype.animate = function(keyframes, options) {
     clone = this.cloneNode(true);
     clones.set(node, clone);
     clone.style.display = 'none';
-    clone.style.position = 'absolute';
+    clone.style.position = getComputedStyle(node).position == 'fixed' ? 'fixed' : 'absolute';
     clone.style.width = `${this.clientWidth}px`;
     clone.style.height = `${this.clientHeight}px`;
+    this.style.mixBlendMode = 'plus-lighter';
     this.parentNode.insertBefore(clone, this);
   }
 
@@ -112,6 +113,10 @@ Element.prototype.animate = function(keyframes, options) {
     motionKeyframes.push(motionKeyframe);
   }
 
+  function setOpacity(opacity) {
+    node.style.filter = `opacity(${Math.round(opacity * 100)}%)`;
+    clone.style.filter = `opacity(${Math.round((1 - opacity) * 100)}%)`;
+  }
 
   let dummyAnimation = elementAnimate.apply(this, [{}, options]);
   let realNonMotionAnimation = elementAnimate.apply(this, [nonMotionKeyframes, options]);
@@ -121,13 +126,28 @@ Element.prototype.animate = function(keyframes, options) {
 
   realMotionAnimation.pause();
   realNonMotionAnimation.pause();
+  cloneMotionAnimation.pause();
+  cloneNonMotionAnimation.pause();
   let running = true;
+  let lastProgress = null;
   let raf = function() {
+    requestAnimationFrame(raf);
+    let progress = dummyAnimation.currentTime / duration;
+    if (progress > 0 && progress < 1)
+      console.log(progress);
+    if (progress == lastProgress ||
+        (lastProgress < 0 && progress < 0) ||
+        (lastProgress > 1 && progress > 1)) {
+      return;
+    }
+    // Copy the playback rate to ensure that fill effects are correct.
+    realNonMotionAnimation.playbackRate = realMotionAnimation.playbackRate = cloneMotionAnimation.playbackRate = cloneNonMotionAnimation.playbackRate = dummyAnimation.playbackRate;
+    lastProgress = progress;
     if (animationMode[0] == MOTION_CROSSFADE) {
       clone.style.display = getComputedStyle(node).display;
     } else {
       clone.style.display = 'none';
-      node.style.filter = '';
+      setOpacity(1);
     }
     switch (animationMode[0]) {
       case MOTION_NONE: {
@@ -135,9 +155,11 @@ Element.prototype.animate = function(keyframes, options) {
         break;
       }
       case MOTION_NEAREST: {
-        let progress = dummyAnimation.currentTime / duration
-        if (progress > 1) {
-          progress = progress % 1;
+        // This assumes no iterations on animation.
+        if (progress >= 1 || progress < 0) {
+          cloneMotionAnimation.currentTime = realMotionAnimation.currentTime = progress * duration;
+          setOpacity(1);
+          break;
         }
         let nextIndex = 1;
         for (; nextIndex < offsets.length - 1; ++nextIndex) {
@@ -150,9 +172,11 @@ Element.prototype.animate = function(keyframes, options) {
         break;
       }
       case MOTION_CROSSFADE: {
-        let progress = dummyAnimation.currentTime / duration;
-        if (progress > 1) {
-          progress = progress % 1;
+        // This assumes no iterations on animation.
+        if (progress > 1 || progress < 0) {
+          cloneMotionAnimation.currentTime = realMotionAnimation.currentTime = progress * duration;
+          setOpacity(1);
+          break;
         }
         let nextIndex = 1;
         for (; nextIndex < offsets.length - 1; ++nextIndex) {
@@ -168,8 +192,7 @@ Element.prototype.animate = function(keyframes, options) {
         let t2 = (t + (1 - CROSSFADE_PROGRESS) * (p2 - p1));
         realMotionAnimation.currentTime =  t * duration;
         cloneMotionAnimation.currentTime = t2 * duration;
-        node.style.filter = `opacity(${(1 - p) * 100}%)`;
-        clone.style.filter = `opacity(${p * 100}%)`;
+        setOpacity(1 - p);
         break;
       }
       case MOTION_FULL: {
@@ -184,7 +207,6 @@ Element.prototype.animate = function(keyframes, options) {
       realNonMotionAnimation.currentTime = dummyAnimation.currentTime;
       cloneNonMotionAnimation.currentTime = dummyAnimation.currentTime;
     }
-    requestAnimationFrame(raf);
   };
   raf();
   return dummyAnimation;
@@ -201,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
       selector.appendChild(option);
     }
     selector.addEventListener('change', (evt) => {
+      window.location.hash = selector.selectedIndex;
       selectMode(selector.selectedIndex);
     })
   }
@@ -211,5 +234,9 @@ document.addEventListener('DOMContentLoaded', () => {
       selector.selectedIndex = mode;
     }
   }
-  selectMode(0);
+  if (window.location.hash) {
+    selectMode(parseInt(window.location.hash.substr(1)));
+  } else {
+    selectMode(0);
+  }
 })
