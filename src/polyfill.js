@@ -3,10 +3,14 @@ const elementAnimate = Element.prototype.animate;
 const MOTION_NONE = 0;
 const MOTION_NEAREST = 1;
 const MOTION_CROSSFADE = 2;
-const MOTION_FULL = 3;
+const MOTION_CROSSFADE_MIDPOINT = 3;
+const MOTION_FULL = 4;
 
 // The proportion of real progress shown.
 const CROSSFADE_PROGRESS = 0.1;
+
+// Duration of automatic crossfades.
+const CROSSFADE_TICK_TIME = 150;
 
 let longhands = function(property) {
   return [property, `${property}Top`, `${property}Left`, `${property}Right`, `${property}Bottom`];
@@ -22,6 +26,7 @@ const ANIMATION_MODES = [
   ['Non-motion only', [MOTION_NONE, false]],
   ['Nearest keyframe', [MOTION_NEAREST, true]],
   ['Nearest motion keyframe', [MOTION_NEAREST, false]],
+  ['Crossfade to nearest keyframe', [MOTION_CROSSFADE_MIDPOINT, true]],
   ['Crossfade', [MOTION_CROSSFADE, true]],
   ['Crossfade motion', [MOTION_CROSSFADE, false]],
   ['Full animation', [MOTION_FULL, true]],
@@ -133,6 +138,7 @@ Element.prototype.animate = function(keyframes, options) {
   cloneNonMotionAnimation.pause();
   let running = true;
   let lastProgress = null;
+  let scheduledTick = null;
   let raf = function() {
     requestAnimationFrame(raf);
     let progress = dummyAnimation.currentTime / duration;
@@ -143,7 +149,6 @@ Element.prototype.animate = function(keyframes, options) {
     }
     // Copy the playback rate to ensure that fill effects are correct.
     realNonMotionAnimation.playbackRate = realMotionAnimation.playbackRate = cloneMotionAnimation.playbackRate = cloneNonMotionAnimation.playbackRate = dummyAnimation.playbackRate;
-    lastProgress = progress;
     if (animationMode[0] == MOTION_CROSSFADE) {
       clone.style.display = getComputedStyle(node).display;
     } else {
@@ -172,7 +177,8 @@ Element.prototype.animate = function(keyframes, options) {
         realMotionAnimation.currentTime = (p < 0.5 ? p1 : p2) * duration;
         break;
       }
-      case MOTION_CROSSFADE: {
+      case MOTION_CROSSFADE:
+      case MOTION_CROSSFADE_MIDPOINT: {
         // This assumes no iterations on animation.
         if (progress >= 1 || progress <= 0) {
           cloneMotionAnimation.currentTime = realMotionAnimation.currentTime = progress * duration;
@@ -188,13 +194,39 @@ Element.prototype.animate = function(keyframes, options) {
         }
         let p1 = offsets[nextIndex - 1];
         let p2 = offsets[nextIndex];
-        let p = (progress - p1) / (p2 - p1);
-        let t = interp(p * CROSSFADE_PROGRESS, p1, p2);
-        let t2 = (t + (1 - CROSSFADE_PROGRESS) * (p2 - p1));
+        let setProgress = function(p, p1, p2) {
+          let t = interp(p * CROSSFADE_PROGRESS, p1, p2);
+          let t2 = (t + (1 - CROSSFADE_PROGRESS) * (p2 - p1));
 
-        realMotionAnimation.currentTime =  t2 * duration;
-        cloneMotionAnimation.currentTime = t * duration;
-        setOpacity(p);
+          realMotionAnimation.currentTime =  t2 * duration;
+          cloneMotionAnimation.currentTime = t * duration;
+          setOpacity(p);
+        }
+        let p = (progress - p1) / (p2 - p1);
+        if (animationMode[0] == MOTION_CROSSFADE) {
+          setProgress(p, p1, p2);
+        } else {
+          // Check if we just crossed the midpoint.
+          let midpoint = (p1 + p2) / 2;
+          if (lastProgress >= midpoint && progress < midpoint ||
+              lastProgress < midpoint && progress >= midpoint) {
+            if (scheduledTick) {
+              cancelAnimationFrame(scheduledTick);
+            }
+            let initial = lastProgress < midpoint ? 0 : 1;
+            let dir = 1 - 2 * initial;
+            let start = performance.now();
+            let dur = Math.min((p2 - p1) * duration, CROSSFADE_TICK_TIME);
+            let tick = function(ts) {
+              let amount = Math.min(1, (ts - start) / dur);
+              setProgress(initial + dir * amount, p1, p2);
+              scheduledTick = null;
+              if (amount < 1)
+                scheduledTick = requestAnimationFrame(tick);
+            }
+            tick(start);
+          }
+        }
         break;
       }
       case MOTION_FULL: {
@@ -209,6 +241,7 @@ Element.prototype.animate = function(keyframes, options) {
       realNonMotionAnimation.currentTime = dummyAnimation.currentTime;
       cloneNonMotionAnimation.currentTime = dummyAnimation.currentTime;
     }
+    lastProgress = progress;
   };
   raf();
   return dummyAnimation;
