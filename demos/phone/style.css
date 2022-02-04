@@ -47,6 +47,8 @@ select {
 
 .feature > div {
   position: absolute;
+  will-change: transform;
+  will-change: opacity;
 }
 
 .perspective {
@@ -114,6 +116,7 @@ select {
 
 .screen {
   background: url('images/tree.jpg');
+  will-change: transform;
 }
 
 .phone .face,

@@ -82,6 +82,9 @@ Element.prototype.animate = function(keyframes, options) {
     clones.set(node, clone);
     clone.style.display = 'none';
     clone.style.position = getComputedStyle(node).position == 'fixed' ? 'fixed' : 'absolute';
+    clone.style.margin = '0';
+    clone.style.top = `${this.offsetTop}px`;
+    clone.style.left = `${this.offsetLeft}px`;
     clone.style.width = `${this.clientWidth}px`;
     clone.style.height = `${this.clientHeight}px`;
     this.style.mixBlendMode = 'plus-lighter';
@@ -133,8 +136,6 @@ Element.prototype.animate = function(keyframes, options) {
   let raf = function() {
     requestAnimationFrame(raf);
     let progress = dummyAnimation.currentTime / duration;
-    if (progress > 0 && progress < 1)
-      console.log(progress);
     if (progress == lastProgress ||
         (lastProgress < 0 && progress < 0) ||
         (lastProgress > 1 && progress > 1)) {
@@ -173,7 +174,7 @@ Element.prototype.animate = function(keyframes, options) {
       }
       case MOTION_CROSSFADE: {
         // This assumes no iterations on animation.
-        if (progress > 1 || progress < 0) {
+        if (progress >= 1 || progress <= 0) {
           cloneMotionAnimation.currentTime = realMotionAnimation.currentTime = progress * duration;
           setOpacity(1);
           break;
@@ -190,9 +191,10 @@ Element.prototype.animate = function(keyframes, options) {
         let p = (progress - p1) / (p2 - p1);
         let t = interp(p * CROSSFADE_PROGRESS, p1, p2);
         let t2 = (t + (1 - CROSSFADE_PROGRESS) * (p2 - p1));
-        realMotionAnimation.currentTime =  t * duration;
-        cloneMotionAnimation.currentTime = t2 * duration;
-        setOpacity(1 - p);
+
+        realMotionAnimation.currentTime =  t2 * duration;
+        cloneMotionAnimation.currentTime = t * duration;
+        setOpacity(p);
         break;
       }
       case MOTION_FULL: {
