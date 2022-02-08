@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../../src/scroll-animations.js"></script>
+    <script src="../../src/polyfill.js"></script>
+    <script src="animations.js"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="background"></div>
+    <div class="shade"></div>
+    <div class="article">
+      <section>
+        <h1>Scroll triggered animations</h1>
+
+        <h2>Overview</h2>
+
+        <p>
+          The concept behind scroll triggered animations is that there are various trigger points where
+          the animation will update. Scrolling from one side of this point to the other plays the
+          animation, either in the forward or reverse direction.
+        </p>
+      </section>
+
+      <section>
+        <h2>Reducing motion</h2>
+
+        <p>
+          This page has an example of such an animation with a high amount of motion.
+        </p>
+
+        <select class="reduce-motion"></select>
+      </section>
+
+      <section>
+        <h2 id="anchor1">Eiffel tower</h2>
+        <p>
+          The eiffel tower can be seen in this section.
+        </p>
+      </section>
+      <section>
+        <h2 id="anchor2">Ferris wheel</h2>
+        <p>A ferris wheel sits behind the hedges.</p>
+      </section>
+      <section>
+        <h2 id="anchor3">Construction</h2>
+        <p>A new building is going up here.</p>
+      </section>
+      <section>
+        <h2 id="anchor4">Summary</h2>
+        <p>
+          This demo is meant to mimic the kind of animation present on articles which
+          have scroll triggered effects such as this
+          <a href="https://www.washingtonpost.com/opinions/interactive/2022/ann-telnaes-jan-6-capitol-cartoon/">Washington Post opinion piece</a>.</p>
+        </p>
+      </section>
+    </div>
+  </body>
+</html>

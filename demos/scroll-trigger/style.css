@@ -1,0 +1,38 @@
+.article {
+  position: relative;
+  width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.background {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: -2;
+  background-image: url('images/scene.jpg');
+  width: 6388px;
+  height: 1858px;
+  will-change: transform;
+}
+
+.shade {
+  position: fixed;
+  z-index: -1;
+  top: calc(50vh - min(30vw, 30vh));
+  left: calc(50vw - min(30vw, 30vh));
+  right: calc(50vw - min(30vw, 30vh));
+  bottom: calc(50vh - min(30vw, 30vh));
+  box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.3);
+  filter: blur(70px);
+  mix-blend-mode: saturate;
+}
+
+section {
+  margin: 600px 0;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  padding: 8px;
+  border-radius: 5px;
+}
