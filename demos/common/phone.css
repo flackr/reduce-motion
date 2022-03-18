@@ -3,6 +3,7 @@ body {
   justify-content: center;
   align-content: center;
   gap: var(--size-8);
+  padding-block: var(--size-12);
 }
 
 body > section {
