@@ -3,18 +3,28 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="../../src/polyfill.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/open-props">
+    <link rel="stylesheet" href="https://unpkg.com/open-props/normalize.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/open-props/buttons.min.css">
     <style>
       .target {
         width: 100px;
         height: 100px;
         background: green;
       }
+
+      body {
+        display: grid;
+        place-content: center;
+        gap: var(--size-3);
+        justify-items: start;
+      }
     </style>
   </head>
   <body>
-    <h1>A simple test</h1>
+    <h3>Customize animation style</h3>
     <select class="reduce-motion"></select>
-    <button>Click to animate</button>
+    <button>Animate</button>
     <div class="target"></div>
   </body>
   <script>
