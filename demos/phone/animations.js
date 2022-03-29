@@ -14,12 +14,12 @@ function init() {
   }
   const TRANSITION = 0.1;
   let backgroundAnim = document.querySelector('.screen').animate([
-    {backgroundImage: 'url(images/tree.jpg)'},
-    {backgroundImage: 'url(images/tree.jpg)', offset: 0.33 - TRANSITION},
-    {backgroundImage: 'url(images/camera.jpg)', offset: 0.33 + TRANSITION},
-    {backgroundImage: 'url(images/camera.jpg)', offset: 0.66 - TRANSITION},
-    {backgroundImage: 'url(images/play.png)', offset: 0.66 + TRANSITION},
-    {backgroundImage: 'url(images/play.png)'},
+    {backgroundImage: 'url(https://doodleipsum.com/394x700/hand-drawn?bg=63C8D9&i=9b12378de637a8663721fab14cdb9dbe)'},
+    {backgroundImage: 'url(https://doodleipsum.com/394x700/hand-drawn?bg=63C8D9&i=9b12378de637a8663721fab14cdb9dbe)', offset: 0.33 - TRANSITION},
+    {backgroundImage: 'url(https://doodleipsum.com/394x700?bg=EB765D&i=166fbaec307d0c16778aa5f001d8787c)', offset: 0.33 + TRANSITION},
+    {backgroundImage: 'url(https://doodleipsum.com/394x700?bg=EB765D&i=166fbaec307d0c16778aa5f001d8787c)', offset: 0.66 - TRANSITION},
+    {backgroundImage: 'url(https://doodleipsum.com/394x700?bg=EB765D&i=34b1669d12f4f37be2f8fda91b87b784)', offset: 0.66 + TRANSITION},
+    {backgroundImage: 'url(https://doodleipsum.com/394x700?bg=EB765D&i=34b1669d12f4f37be2f8fda91b87b784)'},
   ], {duration: 10000, fill: 'both'});
   scrollLinkAnimation(scroller, backgroundAnim, totalProgress);
   for (let i = 0; i < anims.length; i++) {

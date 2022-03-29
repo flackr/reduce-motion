@@ -1,10 +1,7 @@
-.phone-view {
-  padding: 8px;
-}
-
 select {
   position: relative;
   z-index: 50;
+  margin-block-start: var(--size-3);
 }
 
 .product-view {
@@ -14,6 +11,11 @@ select {
 .feature {
   height: 150px;
   position: relative;
+}
+
+.feature3 {
+  display: grid;
+  gap: var(--size-2);
 }
 
 .line {
@@ -115,7 +117,7 @@ select {
 }
 
 .screen {
-  background: url('images/tree.jpg');
+  background: url('https://doodleipsum.com/394x700/hand-drawn?bg=63C8D9&i=9b12378de637a8663721fab14cdb9dbe');
   will-change: transform;
 }
 

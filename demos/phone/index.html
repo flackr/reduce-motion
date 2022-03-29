@@ -2,6 +2,8 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/open-props">
+    <link rel="stylesheet" href="https://unpkg.com/open-props/normalize.min.css">
     <link rel="stylesheet" href="../common/phone.css">
     <link rel="stylesheet" href="style.css">
     <script src="../../src/scroll-animations.js"></script>
@@ -9,13 +11,19 @@
     <script src="animations.js"></script>
   </head>
   <body>
+    <section>
+      <div>
+        <h3>The CSS phone</h3>
+        <p>The CSS phone is built of high quality &lt;div&gt; elements.</p>
+      </div>
+      <div>
+        <h5>Animation reduction</h5>
+        <p>Select animation reduction intervention</p>
+        <select class="reduce-motion"></select>
+      </div>
+    </section>
     <div class="phone-view">
-      <h1>The CSS phone</h1>
-      <p>The CSS phone is built of high quality &lt;div&gt; elements.</p>
-      <h3>Animation reduction</h3>
-      <p>Select animation reduction intervention</p>
-      <select class="reduce-motion"></select>
-      <h1>Features</h1>
+      <h3>Features</h3>
       <div class="product-view">
         <div class="sticky-view">
           <div class="feature">
